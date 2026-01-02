@@ -9,7 +9,8 @@ Write-Host "Checking Node.js..." -ForegroundColor Yellow
 try {
     $nodeVersion = node --version
     Write-Host "✓ Node.js $nodeVersion found" -ForegroundColor Green
-} catch {
+}
+catch {
     Write-Host "✗ Node.js not found. Please install Node.js 18+ from https://nodejs.org/" -ForegroundColor Red
     exit 1
 }
@@ -19,7 +20,8 @@ Write-Host "`nChecking npm..." -ForegroundColor Yellow
 try {
     $npmVersion = npm --version
     Write-Host "✓ npm $npmVersion found" -ForegroundColor Green
-} catch {
+}
+catch {
     Write-Host "✗ npm not found" -ForegroundColor Red
     exit 1
 }
@@ -40,11 +42,13 @@ if (-not (Test-Path ".env")) {
         Copy-Item ".env.example" ".env"
         Write-Host "✓ Created .env file from .env.example" -ForegroundColor Green
         Write-Host "⚠ Please edit .env file and set your configuration!" -ForegroundColor Yellow
-    } else {
+    }
+    else {
         Write-Host "✗ .env.example not found" -ForegroundColor Red
         exit 1
     }
-} else {
+}
+else {
     Write-Host "✓ .env file already exists" -ForegroundColor Green
 }
 
@@ -59,9 +63,7 @@ Write-Host "JWT_REFRESH_SECRET=$jwtRefreshSecret" -ForegroundColor White
 
 Write-Host "`n✓ Setup complete!" -ForegroundColor Green
 Write-Host "`nNext steps:" -ForegroundColor Cyan
-Write-Host "1. Edit .env file with your database credentials" -ForegroundColor White
+Write-Host "1. Edit .env file with your MongoDB connection (MONGODB_URI)" -ForegroundColor White
 Write-Host "2. Set JWT_SECRET and JWT_REFRESH_SECRET (use values above)" -ForegroundColor White
-Write-Host "3. Run database migrations" -ForegroundColor White
+Write-Host "3. Start MongoDB: docker-compose up -d" -ForegroundColor White
 Write-Host "4. Start server: npm run dev" -ForegroundColor White
-
-
