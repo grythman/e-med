@@ -1,46 +1,43 @@
-const { Pool } = require('pg');
+const mongoose = require('mongoose');
 require('dotenv').config();
 
-const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
-  ssl: process.env.NODE_ENV === 'production' ? {
-    rejectUnauthorized: false
-  } : false
-});
+// MongoDB connection string
+const MONGODB_URI = process.env.MONGODB_URI || process.env.DATABASE_URL || 'mongodb://localhost:27017/emed';
 
-// Test connection
-pool.on('connect', () => {
-  console.log('✅ Database connected');
-});
-
-pool.on('error', (err) => {
-  console.error('❌ Database connection error:', err);
-  process.exit(-1);
-});
-
-// Query helper
-const query = async (text, params) => {
-  const start = Date.now();
-  try {
-    const res = await pool.query(text, params);
-    const duration = Date.now() - start;
-    console.log('Executed query', { text, duration, rows: res.rowCount });
-    return res;
-  } catch (error) {
-    console.error('Query error:', error);
-    throw error;
-  }
+// Connection options
+const options = {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
 };
 
-module.exports = {
-  pool,
-  query
-};
+// Connect to MongoDB
+mongoose.connect(MONGODB_URI, options)
+  .then(() => {
+    console.log('✅ MongoDB connected');
+  })
+  .catch((err) => {
+    console.error('❌ MongoDB connection error:', err);
+    process.exit(-1);
+  });
 
+// Connection event handlers
+mongoose.connection.on('connected', () => {
+  console.log('Mongoose connected to MongoDB');
+});
 
+mongoose.connection.on('error', (err) => {
+  console.error('Mongoose connection error:', err);
+});
 
+mongoose.connection.on('disconnected', () => {
+  console.log('Mongoose disconnected');
+});
 
+// Graceful shutdown
+process.on('SIGINT', async () => {
+  await mongoose.connection.close();
+  console.log('MongoDB connection closed through app termination');
+  process.exit(0);
+});
 
-
-
-
+module.exports = mongoose;

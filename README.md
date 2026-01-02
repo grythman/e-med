@@ -6,7 +6,7 @@
 
 - **Frontend**: React.js / Next.js
 - **Backend**: Node.js + Express.js
-- **Database**: PostgreSQL
+- **Database**: MongoDB (Mongoose)
 - **Cache**: Redis
 - **Mobile**: React Native (Phase 3)
 
@@ -27,7 +27,7 @@ e-med/
 ### Шаардлагууд
 
 - Node.js 18+
-- PostgreSQL 15+
+- MongoDB 7+
 - Redis 7+
 - npm эсвэл yarn
 - Docker (optional, database-д ашиглах)
@@ -46,8 +46,7 @@ e-med/
 # 1. Database эхлүүлэх (Docker)
 docker-compose up -d
 
-# 2. Database migrations ажиллуулах
-psql -h localhost -U postgres -d emed -f database/migrations/001_initial_schema.sql
+# MongoDB нь автоматаар холбогдоно (connection string: mongodb://localhost:27017/emed)
 
 # 3. Backend
 cd backend

@@ -7,10 +7,13 @@ const compression = require('compression');
 const morgan = require('morgan');
 require('dotenv').config();
 
+// MongoDB connection
+require('./config/database');
+
 const app = express();
 
 // Environment validation
-const requiredEnvVars = ['DATABASE_URL', 'JWT_SECRET', 'JWT_REFRESH_SECRET'];
+const requiredEnvVars = ['JWT_SECRET', 'JWT_REFRESH_SECRET'];
 requiredEnvVars.forEach(envVar => {
   if (!process.env[envVar]) {
     console.error(`Error: ${envVar} is not defined in environment variables`);
@@ -74,7 +77,7 @@ app.use(cors({
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
-// MongoDB injection prevention (for future MongoDB support)
+// MongoDB injection prevention
 app.use(mongoSanitize());
 
 // Compression
@@ -92,16 +95,63 @@ app.get('/health', (req, res) => {
 const authRoutes = require('./routes/auth');
 app.use('/api/auth', authRoutes);
 
+const courseRoutes = require('./routes/courses');
+app.use('/api/courses', courseRoutes);
+
+const lessonRoutes = require('./routes/lessons');
+app.use('/api/lessons', lessonRoutes);
+
+const paymentRoutes = require('./routes/payments');
+app.use('/api/payments', paymentRoutes);
+
+const certificateRoutes = require('./routes/certificates');
+app.use('/api/certificates', certificateRoutes);
+
 app.get('/api', (req, res) => {
   res.json({ 
     message: 'e-med API',
     version: '1.0.0',
     endpoints: {
-      health: '/health',
+      health: 'GET /health',
       auth: {
         register: 'POST /api/auth/register',
         login: 'POST /api/auth/login',
-        me: 'GET /api/auth/me'
+        logout: 'POST /api/auth/logout',
+        refresh: 'POST /api/auth/refresh',
+        forgotPassword: 'POST /api/auth/forgot-password',
+        resetPassword: 'POST /api/auth/reset-password',
+        me: 'GET /api/auth/me',
+        updateProfile: 'PUT /api/auth/me'
+      },
+      courses: {
+        list: 'GET /api/courses',
+        get: 'GET /api/courses/:id',
+        create: 'POST /api/courses',
+        update: 'PUT /api/courses/:id',
+        delete: 'DELETE /api/courses/:id',
+        lessons: 'GET /api/courses/:id/lessons',
+        enroll: 'POST /api/courses/:id/enroll',
+        progress: 'GET /api/courses/:id/progress'
+      },
+      lessons: {
+        get: 'GET /api/lessons/:id',
+        video: 'GET /api/lessons/:id/video',
+        progress: 'PUT /api/lessons/:id/progress',
+        quiz: 'GET /api/lessons/:id/quiz',
+        submitQuiz: 'POST /api/lessons/:id/quiz/attempt'
+      },
+      payments: {
+        create: 'POST /api/payments',
+        get: 'GET /api/payments/:id',
+        webhook: 'POST /api/payments/:id/webhook',
+        history: 'GET /api/payments/history'
+      },
+      certificates: {
+        list: 'GET /api/certificates',
+        get: 'GET /api/certificates/:id',
+        verify: 'GET /api/certificates/verify/:code',
+        download: 'POST /api/certificates/:id/download',
+        generate: 'POST /api/certificates/generate/:enrollmentId'
       }
     }
   });
