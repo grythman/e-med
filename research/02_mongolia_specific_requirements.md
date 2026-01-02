@@ -270,3 +270,4 @@ font-family: "Roboto", "Segoe UI", "Tahoma", sans-serif;
    - Global cloud (development)
    - Local hosting (production, хэрэв шаардлагатай)
 
+

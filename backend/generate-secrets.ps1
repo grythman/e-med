@@ -14,3 +14,4 @@ Write-Host $jwtRefreshSecret -ForegroundColor White
 
 Write-Host "`nCopy these values to your .env file!" -ForegroundColor Green
 
+

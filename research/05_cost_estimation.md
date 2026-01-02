@@ -372,3 +372,4 @@
 - Payment fees нь төлбөрийн хэмжээнээс хамаарна (variable)
 - Video streaming зардал нь video хэмжээнээс хамаарна
 
+

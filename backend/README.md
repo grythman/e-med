@@ -65,3 +65,4 @@ PostgreSQL database connection configured in `config/database.js`.
 
 Required tables are created via migrations in `../database/migrations/`.
 
+

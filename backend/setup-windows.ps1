@@ -64,3 +64,4 @@ Write-Host "2. Set JWT_SECRET and JWT_REFRESH_SECRET (use values above)" -Foregr
 Write-Host "3. Run database migrations" -ForegroundColor White
 Write-Host "4. Start server: npm run dev" -ForegroundColor White
 
+
