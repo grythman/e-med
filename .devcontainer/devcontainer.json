@@ -1,13 +1,17 @@
 {
   "name": "e-med Development",
   "image": "mcr.microsoft.com/devcontainers/javascript-node:18",
-  
   "features": {
     "ghcr.io/devcontainers/features/docker-in-docker:2": {},
-    "ghcr.io/devcontainers/features/git:1": {}
+    "ghcr.io/devcontainers/features/git:1": {},
+    "ghcr.io/devcontainers/features/sshd:1": {}
   },
-
-  "forwardPorts": [3000, 5000, 5432, 6379],
+  "forwardPorts": [
+    3000,
+    5000,
+    5432,
+    6379
+  ],
   "portsAttributes": {
     "3000": {
       "label": "Frontend",
@@ -26,9 +30,7 @@
       "onAutoForward": "silent"
     }
   },
-
   "postCreateCommand": "bash .devcontainer/post-create.sh",
-
   "customizations": {
     "vscode": {
       "extensions": [
@@ -44,7 +46,5 @@
       }
     }
   },
-
   "remoteUser": "node"
 }
-

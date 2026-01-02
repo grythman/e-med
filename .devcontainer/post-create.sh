@@ -46,3 +46,4 @@ echo "2. Start backend: cd backend && npm run dev"
 echo "3. Start frontend: cd frontend && npm run dev"
 echo "4. Open ports in the Ports tab"
 
+
