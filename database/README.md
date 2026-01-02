@@ -1,86 +1,49 @@
-# Database Setup (MongoDB)
+# Database Setup
 
-## MongoDB Setup
+## PostgreSQL Setup
 
-### Using Docker (Recommended)
+### Using Docker
 
 ```bash
-# Start MongoDB and Redis
+# Start PostgreSQL and Redis
 docker-compose up -d
 
-# Check MongoDB is running
-docker ps
+# Run migrations
+psql -h localhost -U postgres -d emed -f migrations/001_initial_schema.sql
 ```
 
 ### Manual Setup
 
-1. Install MongoDB Community Edition ([Download](https://www.mongodb.com/try/download/community))
-2. Start MongoDB service:
-   ```bash
-   # Windows
-   net start MongoDB
-   
-   # Linux/Mac
-   sudo systemctl start mongod
-   ```
-
-## Connection
-
-MongoDB will be available at `mongodb://localhost:27017/emed`
-
-Update your `.env` file:
-```env
-MONGODB_URI=mongodb://localhost:27017/emed
+1. Install PostgreSQL 15+
+2. Create database:
+```sql
+CREATE DATABASE emed;
 ```
 
-## Models
-
-MongoDB uses Mongoose models instead of SQL tables. Models are defined in `backend/models/`:
-
-- `User.js` - User accounts
-- More models will be added as needed
-
-## MongoDB vs SQL Differences
-
-### No Migrations Needed
-MongoDB doesn't require migrations like SQL databases. Schema is defined in Mongoose models and applied automatically.
-
-### Collections
-MongoDB uses "collections" instead of "tables". Collections are created automatically when you first insert data.
-
-### Indexes
-Indexes are defined in Mongoose schemas and created automatically.
-
-## Useful Commands
-
-### MongoDB Shell (mongosh)
-
+3. Run migrations:
 ```bash
-# Connect to MongoDB
-mongosh
-
-# Switch to database
-use emed
-
-# List collections
-show collections
-
-# Find users
-db.users.find()
-
-# Count documents
-db.users.countDocuments()
+psql -U postgres -d emed -f migrations/001_initial_schema.sql
 ```
 
-### Docker Commands
+## Database Schema
 
-```bash
-# Connect to MongoDB in Docker
-docker exec -it emed-mongodb mongosh
+See `migrations/001_initial_schema.sql` for the complete schema.
 
-# View MongoDB logs
-docker logs emed-mongodb
+### Core Tables:
+- `users` - User accounts
+- `courses` - Course information
+- `lessons` - Course lessons
+- `enrollments` - User course enrollments
+- `lesson_progress` - Lesson completion tracking
+- `quizzes` - Course quizzes
+- `questions` - Quiz questions
+- `answers` - Question answers
+- `quiz_attempts` - Quiz attempt records
+- `certificates` - Course completion certificates
+- `payments` - Payment transactions
 
-# Restart MongoDB
-docker restart emed-mongodb
-```
+
+
+
+
+

@@ -1,5 +1,5 @@
 const { verifyAccessToken } = require('../utils/jwt');
-const User = require('../models/User');
+const { query } = require('../config/database');
 
 /**
  * Authentication middleware
@@ -17,17 +17,22 @@ const authenticate = async (req, res, next) => {
     const decoded = verifyAccessToken(token);
     
     // Verify user still exists and is active
-    const user = await User.findById(decoded.userId);
-    if (!user) {
+    const result = await query(
+      'SELECT id, email, role, is_active FROM users WHERE id = $1',
+      [decoded.userId]
+    );
+
+    if (result.rows.length === 0) {
       return res.status(401).json({ error: 'User not found' });
     }
 
-    if (!user.isActive) {
+    const user = result.rows[0];
+    if (!user.is_active) {
       return res.status(401).json({ error: 'User account is inactive' });
     }
 
     req.user = {
-      userId: user._id.toString(),
+      userId: user.id,
       email: user.email,
       role: user.role
     };
@@ -61,4 +66,9 @@ module.exports = {
   authenticate,
   authorize
 };
+
+
+
+
+
 

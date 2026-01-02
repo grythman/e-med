@@ -1,41 +1,44 @@
-const mongoose = require('mongoose');
+const { Pool } = require('pg');
 require('dotenv').config();
 
-const MONGODB_URI = process.env.MONGODB_URI || process.env.DATABASE_URL || 'mongodb://localhost:27017/emed';
+const pool = new Pool({
+  connectionString: process.env.DATABASE_URL,
+  ssl: process.env.NODE_ENV === 'production' ? {
+    rejectUnauthorized: false
+  } : false
+});
 
-// MongoDB connection options
-const options = {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-};
+// Test connection
+pool.on('connect', () => {
+  console.log('✅ Database connected');
+});
 
-// Connect to MongoDB
-const connectDB = async () => {
+pool.on('error', (err) => {
+  console.error('❌ Database connection error:', err);
+  process.exit(-1);
+});
+
+// Query helper
+const query = async (text, params) => {
+  const start = Date.now();
   try {
-    const conn = await mongoose.connect(MONGODB_URI, options);
-    console.log(`✅ MongoDB connected: ${conn.connection.host}`);
-    
-    // Connection event handlers
-    mongoose.connection.on('error', (err) => {
-      console.error('❌ MongoDB connection error:', err);
-    });
-
-    mongoose.connection.on('disconnected', () => {
-      console.log('⚠️ MongoDB disconnected');
-    });
-
-    // Graceful shutdown
-    process.on('SIGINT', async () => {
-      await mongoose.connection.close();
-      console.log('MongoDB connection closed through app termination');
-      process.exit(0);
-    });
-
-    return conn;
+    const res = await pool.query(text, params);
+    const duration = Date.now() - start;
+    console.log('Executed query', { text, duration, rows: res.rowCount });
+    return res;
   } catch (error) {
-    console.error('❌ MongoDB connection error:', error);
-    process.exit(1);
+    console.error('Query error:', error);
+    throw error;
   }
 };
 
-module.exports = connectDB;
+module.exports = {
+  pool,
+  query
+};
+
+
+
+
+
+

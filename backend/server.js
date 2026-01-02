@@ -7,22 +7,16 @@ const compression = require('compression');
 const morgan = require('morgan');
 require('dotenv').config();
 
-// Database connection
-const connectDB = require('./config/database');
-
 const app = express();
 
 // Environment validation
-const requiredEnvVars = ['JWT_SECRET', 'JWT_REFRESH_SECRET'];
+const requiredEnvVars = ['DATABASE_URL', 'JWT_SECRET', 'JWT_REFRESH_SECRET'];
 requiredEnvVars.forEach(envVar => {
   if (!process.env[envVar]) {
     console.error(`Error: ${envVar} is not defined in environment variables`);
     process.exit(1);
   }
 });
-
-// Connect to MongoDB
-connectDB();
 
 // Middleware
 app.use(helmet({

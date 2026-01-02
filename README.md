@@ -27,14 +27,18 @@ e-med/
 ### Шаардлагууд
 
 - Node.js 18+
-- MongoDB 7+ (эсвэл Docker ашиглах)
-- Redis 7+ (эсвэл Docker ашиглах)
+- PostgreSQL 15+
+- Redis 7+
 - npm эсвэл yarn
-- Docker Desktop (optional, database-д ашиглах)
+- Docker (optional, database-д ашиглах)
 
 ### Хурдан Эхлэл
 
-**Windows хэрэглэгчдэд**: [SETUP_WINDOWS.md](./SETUP_WINDOWS.md) файлд Windows-д тохирсон зааварчилгааг үзнэ үү.
+**Cursor IDE + GitHub Codespaces** (Зөвлөмж): [CURSOR_CODESPACES.md](./CURSOR_CODESPACES.md) файлд Cursor дээр Codespace холбох зааварчилгааг үзнэ үү.
+
+**GitHub Codespaces ашиглаж байгаа бол**: [SETUP_CODESPACES.md](./SETUP_CODESPACES.md) файлд Codespaces-д тохирсон зааварчилгааг үзнэ үү.
+
+**WSL (Windows Subsystem for Linux) ашиглаж байгаа бол**: [SETUP_WSL.md](./SETUP_WSL.md) файлд WSL-д тохирсон зааварчилгааг үзнэ үү.
 
 **Linux/Mac хэрэглэгчдэд**: [SETUP.md](./SETUP.md) файлд зааварчилгааг үзнэ үү.
 
@@ -42,7 +46,8 @@ e-med/
 # 1. Database эхлүүлэх (Docker)
 docker-compose up -d
 
-# MongoDB нь migrations хэрэггүй - Mongoose models автоматаар collections үүсгэнэ
+# 2. Database migrations ажиллуулах
+psql -h localhost -U postgres -d emed -f database/migrations/001_initial_schema.sql
 
 # 3. Backend
 cd backend
