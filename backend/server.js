@@ -114,6 +114,9 @@ app.use('/api/payments', paymentRoutes);
 const certificateRoutes = require('./routes/certificates');
 app.use('/api/certificates', certificateRoutes);
 
+const adminRoutes = require('./routes/admin');
+app.use('/api/admin', adminRoutes);
+
 app.get('/api', (req, res) => {
   res.json({ 
     message: 'e-med API',

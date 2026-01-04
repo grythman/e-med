@@ -34,6 +34,11 @@ const Header = () => {
                 <Link to="/profile" className="text-gray-700 hover:text-blue-600">
                   {t('navigation.profile')}
                 </Link>
+                {user?.role === 'admin' && (
+                  <Link to="/admin" className="text-gray-700 hover:text-blue-600">
+                    Админ
+                  </Link>
+                )}
               </>
             )}
           </nav>
