@@ -13,7 +13,7 @@ const lessonProgressSchema = new mongoose.Schema({
     required: true
   },
   watchedDuration: {
-    type: Number, // seconds
+    type: Number,
     default: 0,
     min: 0
   },
@@ -28,9 +28,6 @@ const lessonProgressSchema = new mongoose.Schema({
   timestamps: true
 });
 
-// Unique constraint: one progress record per enrollment per lesson
 lessonProgressSchema.index({ enrollmentId: 1, lessonId: 1 }, { unique: true });
 
 module.exports = mongoose.model('LessonProgress', lessonProgressSchema);
-
-

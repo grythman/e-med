@@ -21,7 +21,7 @@ const quizSchema = new mongoose.Schema({
     max: 100
   },
   timeLimit: {
-    type: Number, // minutes
+    type: Number,
     min: 0
   }
 }, {
@@ -29,5 +29,3 @@ const quizSchema = new mongoose.Schema({
 });
 
 module.exports = mongoose.model('Quiz', quizSchema);
-
-

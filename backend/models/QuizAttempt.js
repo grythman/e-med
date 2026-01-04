@@ -36,5 +36,3 @@ const quizAttemptSchema = new mongoose.Schema({
 });
 
 module.exports = mongoose.model('QuizAttempt', quizAttemptSchema);
-
-

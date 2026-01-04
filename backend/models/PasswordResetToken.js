@@ -17,15 +17,12 @@ const passwordResetTokenSchema = new mongoose.Schema({
     type: Date,
     required: true,
     index: true,
-    expires: 0 // TTL index - automatically delete expired documents
+    expires: 0
   }
 }, {
   timestamps: true
 });
 
-// TTL index for automatic cleanup
 passwordResetTokenSchema.index({ expiresAt: 1 }, { expireAfterSeconds: 0 });
 
 module.exports = mongoose.model('PasswordResetToken', passwordResetTokenSchema);
-
-
