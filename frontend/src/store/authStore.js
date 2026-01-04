@@ -31,10 +31,24 @@ const useAuthStore = create(
           const { user, tokens } = await authService.register(userData);
           localStorage.setItem('accessToken', tokens.accessToken);
           localStorage.setItem('refreshToken', tokens.refreshToken);
-          set({ user, isAuthenticated: true, isLoading: false });
+          set({ user, isAuthenticated: true, isLoading: false, error: null });
           return { success: true };
         } catch (error) {
-          const errorMessage = error.response?.data?.error || 'Registration failed';
+          // Handle validation errors from express-validator
+          let errorMessage = 'Registration failed';
+          
+          if (error.response?.data?.errors && Array.isArray(error.response.data.errors)) {
+            // Multiple validation errors
+            errorMessage = error.response.data.errors
+              .map(err => err.msg || err.message)
+              .join(', ');
+          } else if (error.response?.data?.error) {
+            // Single error message
+            errorMessage = error.response.data.error;
+          } else if (error.message) {
+            errorMessage = error.message;
+          }
+          
           set({ error: errorMessage, isLoading: false });
           return { success: false, error: errorMessage };
         }

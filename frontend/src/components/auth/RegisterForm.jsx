@@ -40,12 +40,18 @@ const RegisterForm = () => {
       errors.password = 'Нууц үг оруулах шаардлагатай';
     } else if (formData.password.length < 8) {
       errors.password = 'Нууц үг хамгийн багадаа 8 тэмдэгт байх ёстой';
+    } else if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])/.test(formData.password)) {
+      errors.password = 'Нууц үг нь том, жижиг үсэг, тоо, тусгай тэмдэгт агуулах ёстой';
     }
     if (!formData.firstName) {
       errors.firstName = 'Нэр оруулах шаардлагатай';
+    } else if (formData.firstName.length < 2) {
+      errors.firstName = 'Нэр хамгийн багадаа 2 тэмдэгт байх ёстой';
     }
     if (!formData.lastName) {
       errors.lastName = 'Овог оруулах шаардлагатай';
+    } else if (formData.lastName.length < 2) {
+      errors.lastName = 'Овог хамгийн багадаа 2 тэмдэгт байх ёстой';
     }
     return errors;
   };

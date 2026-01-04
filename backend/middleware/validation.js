@@ -6,8 +6,25 @@ const { body, validationResult } = require('express-validator');
 const handleValidationErrors = (req, res, next) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
-    return res.status(400).json({
-      errors: errors.array()
+    // Format errors for better frontend display
+    const formattedErrors = errors.array().map(err => ({
+      field: err.path || err.param,
+      message: err.msg || err.message
+    }));
+    
+    // If single error, return simple error message for backward compatibility
+    if (formattedErrors.length === 1) {
+      return res.status(400).json({ 
+        error: formattedErrors[0].message,
+        errors: formattedErrors 
+      });
+    }
+    
+    // Multiple errors
+    const errorMessages = formattedErrors.map(e => e.message).join(', ');
+    return res.status(400).json({ 
+      error: errorMessages,
+      errors: formattedErrors 
     });
   }
   next();
