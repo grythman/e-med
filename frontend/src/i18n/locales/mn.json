@@ -1,0 +1,92 @@
+{
+  "common": {
+    "loading": "Ачааллаж байна...",
+    "error": "Алдаа гарлаа",
+    "success": "Амжилттай",
+    "cancel": "Цуцлах",
+    "save": "Хадгалах",
+    "delete": "Устгах",
+    "edit": "Засварлах",
+    "create": "Үүсгэх",
+    "search": "Хайх",
+    "filter": "Шүүх",
+    "back": "Буцах"
+  },
+  "auth": {
+    "login": "Нэвтрэх",
+    "register": "Бүртгүүлэх",
+    "logout": "Гарах",
+    "email": "Имэйл",
+    "password": "Нууц үг",
+    "firstName": "Нэр",
+    "lastName": "Овог",
+    "phone": "Утас",
+    "forgotPassword": "Нууц үгээ мартсан уу?",
+    "resetPassword": "Нууц үг сэргээх",
+    "loginSuccess": "Амжилттай нэвтэрлээ",
+    "registerSuccess": "Бүртгэл амжилттай",
+    "invalidCredentials": "Имэйл эсвэл нууц үг буруу байна"
+  },
+  "course": {
+    "title": "Хичээлүүд",
+    "myCourses": "Миний хичээлүүд",
+    "enroll": "Бүртгүүлэх",
+    "enrolled": "Бүртгүүлсэн",
+    "progress": "Явц",
+    "lessons": "Хичээлүүд",
+    "instructor": "Багш",
+    "level": "Түвшин",
+    "language": "Хэл",
+    "price": "Үнэ",
+    "duration": "Хугацаа",
+    "description": "Тайлбар",
+    "enrollmentCount": "Бүртгүүлсэн хүмүүс",
+    "enrollSuccess": "Хичээлд амжилттай бүртгүүллээ",
+    "noCourses": "Хичээл олдсонгүй"
+  },
+  "lesson": {
+    "title": "Хичээл",
+    "video": "Видео",
+    "quiz": "Шалгалт",
+    "complete": "Дуусгах",
+    "completed": "Дууссан",
+    "next": "Дараагийн",
+    "previous": "Өмнөх",
+    "progress": "Явц",
+    "watchTime": "Үзсэн хугацаа"
+  },
+  "quiz": {
+    "title": "Шалгалт",
+    "submit": "Илгээх",
+    "score": "Оноо",
+    "passingScore": "Тэнцэх оноо",
+    "passed": "Тэнцсэн",
+    "failed": "Тэнцээгүй",
+    "correct": "Зөв",
+    "incorrect": "Буруу"
+  },
+  "payment": {
+    "title": "Төлбөр",
+    "amount": "Дүн",
+    "method": "Төлбөрийн арга",
+    "status": "Статус",
+    "pending": "Хүлээгдэж байна",
+    "completed": "Дууссан",
+    "failed": "Амжилтгүй"
+  },
+  "certificate": {
+    "title": "Гэрчилгээ",
+    "download": "Татах",
+    "verify": "Баталгаажуулах",
+    "certificateNumber": "Гэрчилгээний дугаар",
+    "issuedAt": "Олгосон огноо"
+  },
+  "navigation": {
+    "home": "Нүүр",
+    "courses": "Хичээлүүд",
+    "myCourses": "Миний хичээлүүд",
+    "profile": "Профайл",
+    "admin": "Админ"
+  }
+}
+

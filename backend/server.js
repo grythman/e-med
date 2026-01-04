@@ -10,6 +10,9 @@ require('dotenv').config();
 // MongoDB connection
 require('./config/database');
 
+// Redis connection
+require('./config/redis');
+
 const app = express();
 
 // Environment validation

@@ -1,6 +1,8 @@
 const paymentRepository = require('../repositories/paymentRepository');
 const courseRepository = require('../repositories/courseRepository');
 const enrollmentRepository = require('../repositories/enrollmentRepository');
+const paymentGatewayService = require('./paymentGatewayService');
+const emailService = require('./emailService');
 
 /**
  * Payment Service
@@ -39,7 +41,36 @@ class PaymentService {
       paymentMethod
     });
 
-    return payment;
+    // Process payment through gateway
+    const gatewayResult = await paymentGatewayService.processPayment(
+      paymentMethod,
+      amount,
+      currency || 'MNT',
+      {
+        paymentId: payment._id.toString(),
+        courseId: courseId.toString(),
+        userId: userId.toString(),
+        description: `Payment for course: ${course.title}`,
+      }
+    );
+
+    if (!gatewayResult.success) {
+      throw new Error(gatewayResult.error || 'Payment processing failed');
+    }
+
+    // Update payment with gateway transaction ID
+    if (gatewayResult.paymentIntentId || gatewayResult.invoiceId) {
+      await paymentRepository.updateStatus(
+        payment._id.toString(),
+        'pending',
+        gatewayResult.paymentIntentId || gatewayResult.invoiceId
+      );
+    }
+
+    return {
+      payment,
+      gatewayData: gatewayResult,
+    };
   }
 
   /**
@@ -53,7 +84,7 @@ class PaymentService {
     }
 
     // Check if user owns this payment (unless admin)
-    if (userId && payment.user_id !== userId) {
+    if (userId && payment.userId.toString() !== userId) {
       // In production, check if user is admin
       throw new Error('Access denied');
     }
@@ -85,9 +116,19 @@ class PaymentService {
     );
 
     // If payment completed, enroll user in course
-    if (status === 'completed' && payment.payment_status !== 'completed') {
+    if (status === 'completed' && payment.paymentStatus !== 'completed') {
       try {
-        await enrollmentRepository.create(payment.user_id, payment.course_id);
+        const enrollment = await enrollmentRepository.create(payment.userId, payment.courseId);
+        
+        // Send enrollment email
+        const User = require('../models/User');
+        const Course = require('../models/Course');
+        const user = await User.findById(payment.userId);
+        const course = await Course.findById(payment.courseId);
+        
+        if (user && course) {
+          await emailService.sendEnrollmentEmail(user, course);
+        }
       } catch (error) {
         // Enrollment might already exist, log but don't fail
         console.error('Auto-enrollment error:', error);

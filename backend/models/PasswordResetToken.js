@@ -28,3 +28,4 @@ passwordResetTokenSchema.index({ expiresAt: 1 }, { expireAfterSeconds: 0 });
 
 module.exports = mongoose.model('PasswordResetToken', passwordResetTokenSchema);
 
+

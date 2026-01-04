@@ -1,0 +1,92 @@
+{
+  "common": {
+    "loading": "Loading...",
+    "error": "Error occurred",
+    "success": "Success",
+    "cancel": "Cancel",
+    "save": "Save",
+    "delete": "Delete",
+    "edit": "Edit",
+    "create": "Create",
+    "search": "Search",
+    "filter": "Filter",
+    "back": "Back"
+  },
+  "auth": {
+    "login": "Login",
+    "register": "Register",
+    "logout": "Logout",
+    "email": "Email",
+    "password": "Password",
+    "firstName": "First Name",
+    "lastName": "Last Name",
+    "phone": "Phone",
+    "forgotPassword": "Forgot Password?",
+    "resetPassword": "Reset Password",
+    "loginSuccess": "Login successful",
+    "registerSuccess": "Registration successful",
+    "invalidCredentials": "Invalid email or password"
+  },
+  "course": {
+    "title": "Courses",
+    "myCourses": "My Courses",
+    "enroll": "Enroll",
+    "enrolled": "Enrolled",
+    "progress": "Progress",
+    "lessons": "Lessons",
+    "instructor": "Instructor",
+    "level": "Level",
+    "language": "Language",
+    "price": "Price",
+    "duration": "Duration",
+    "description": "Description",
+    "enrollmentCount": "Enrolled Students",
+    "enrollSuccess": "Successfully enrolled in course",
+    "noCourses": "No courses found"
+  },
+  "lesson": {
+    "title": "Lesson",
+    "video": "Video",
+    "quiz": "Quiz",
+    "complete": "Complete",
+    "completed": "Completed",
+    "next": "Next",
+    "previous": "Previous",
+    "progress": "Progress",
+    "watchTime": "Watch Time"
+  },
+  "quiz": {
+    "title": "Quiz",
+    "submit": "Submit",
+    "score": "Score",
+    "passingScore": "Passing Score",
+    "passed": "Passed",
+    "failed": "Failed",
+    "correct": "Correct",
+    "incorrect": "Incorrect"
+  },
+  "payment": {
+    "title": "Payment",
+    "amount": "Amount",
+    "method": "Payment Method",
+    "status": "Status",
+    "pending": "Pending",
+    "completed": "Completed",
+    "failed": "Failed"
+  },
+  "certificate": {
+    "title": "Certificate",
+    "download": "Download",
+    "verify": "Verify",
+    "certificateNumber": "Certificate Number",
+    "issuedAt": "Issued Date"
+  },
+  "navigation": {
+    "home": "Home",
+    "courses": "Courses",
+    "myCourses": "My Courses",
+    "profile": "Profile",
+    "admin": "Admin"
+  }
+}
+

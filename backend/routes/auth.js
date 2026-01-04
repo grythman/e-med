@@ -7,6 +7,7 @@ const { validateRegister, validateLogin } = require('../middleware/validation');
 const { body, validationResult } = require('express-validator');
 const { authenticate } = require('../middleware/auth');
 const userRepository = require('../repositories/userRepository');
+const emailService = require('../services/emailService');
 
 /**
  * Handle validation errors

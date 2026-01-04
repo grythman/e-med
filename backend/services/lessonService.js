@@ -1,6 +1,7 @@
 const lessonRepository = require('../repositories/lessonRepository');
 const enrollmentRepository = require('../repositories/enrollmentRepository');
 const courseRepository = require('../repositories/courseRepository');
+const videoService = require('./videoService');
 
 /**
  * Lesson Service
@@ -40,11 +41,17 @@ class LessonService {
   async getVideoUrl(lessonId, userId) {
     const lesson = await this.getLessonById(lessonId, userId);
 
-    // For now, return the video URL directly
-    // In production, this should generate signed URLs for video CDN
+    // Generate signed URL for video CDN
+    const signedUrl = await videoService.getVideoUrl(
+      lesson.videoUrl || lesson._id.toString(),
+      userId,
+      lesson.courseId.toString()
+    );
+
     return {
-      videoUrl: lesson.video_url,
-      videoDuration: lesson.video_duration
+      videoUrl: signedUrl.videoUrl,
+      videoDuration: lesson.videoDuration,
+      expiresAt: signedUrl.expiresAt
     };
   }
 

@@ -39,3 +39,4 @@ lessonSchema.index({ courseId: 1, orderIndex: 1 });
 
 module.exports = mongoose.model('Lesson', lessonSchema);
 
+

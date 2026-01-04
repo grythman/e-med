@@ -3,6 +3,7 @@ const router = express.Router();
 const { body, query: queryValidator, validationResult } = require('express-validator');
 const courseService = require('../services/courseService');
 const { authenticate, authorize } = require('../middleware/auth');
+const { cacheMiddleware, invalidateCache } = require('../middleware/cache');
 
 /**
  * Handle validation errors
@@ -21,6 +22,7 @@ const handleValidationErrors = (req, res, next) => {
  */
 router.get(
   '/',
+  cacheMiddleware(300), // Cache for 5 minutes
   [
     queryValidator('page').optional().isInt({ min: 1 }),
     queryValidator('limit').optional().isInt({ min: 1, max: 100 }),
@@ -100,6 +102,8 @@ router.post(
         req.body,
         req.user.userId
       );
+      // Invalidate courses cache
+      await invalidateCache('cache:/api/courses*');
       res.status(201).json({ course });
     } catch (error) {
       console.error('Create course error:', error);
@@ -245,4 +249,5 @@ router.get('/:id/progress', authenticate, async (req, res) => {
 });
 
 module.exports = router;
+
 

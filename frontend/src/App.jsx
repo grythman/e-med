@@ -1,47 +1,90 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import React, { useEffect } from 'react';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
+import './i18n/config';
+import useAuthStore from './store/authStore';
+
+// Layout
+import Header from './components/layout/Header';
+import Footer from './components/layout/Footer';
+import ProtectedRoute from './components/common/ProtectedRoute';
+
+// Pages
+import Home from './pages/Home';
+import Courses from './pages/Courses';
+import CourseDetail from './pages/CourseDetail';
+import LessonPlayer from './pages/LessonPlayer';
+import Quiz from './pages/Quiz';
+import Payment from './pages/Payment';
+import Profile from './pages/Profile';
+import Login from './pages/Login';
+import Register from './pages/Register';
 
 function App() {
+  const { i18n } = useTranslation();
+  const { fetchCurrentUser, isAuthenticated } = useAuthStore();
+
+  useEffect(() => {
+    // Fetch current user on mount if token exists
+    const token = localStorage.getItem('accessToken');
+    if (token) {
+      fetchCurrentUser();
+    }
+  }, [fetchCurrentUser]);
+
   return (
     <Router>
-      <div className="app">
-        <header>
-          <h1>e-med - Эмчийн Сургалтын Сайт</h1>
-        </header>
-        <main>
+      <div className="flex flex-col min-h-screen">
+        <Header />
+        <main className="flex-grow">
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/courses" element={<Courses />} />
+            <Route path="/courses/:id" element={<CourseDetail />} />
+            <Route path="/lessons/:id" element={<LessonPlayer />} />
+            <Route path="/lessons/:id/quiz" element={<Quiz />} />
+            <Route
+              path="/courses/:courseId/payment"
+              element={
+                <ProtectedRoute>
+                  <Payment />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/login"
+              element={isAuthenticated ? <Navigate to="/courses" replace /> : <Login />}
+            />
+            <Route
+              path="/register"
+              element={isAuthenticated ? <Navigate to="/courses" replace /> : <Register />}
+            />
+            <Route
+              path="/my-courses"
+              element={
+                <ProtectedRoute>
+                  <div className="container mx-auto px-4 py-8">
+                    <h1 className="text-3xl font-bold mb-8">Миний хичээлүүд</h1>
+                    <p className="text-gray-500">Удахгүй хэрэгжүүлнэ...</p>
+                  </div>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/profile"
+              element={
+                <ProtectedRoute>
+                  <Profile />
+                </ProtectedRoute>
+              }
+            />
+            <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </main>
+        <Footer />
       </div>
     </Router>
   );
 }
 
-function Home() {
-  return (
-    <div>
-      <h2>Нүүр хуудас</h2>
-      <p>Тавтай морилно уу! Эмчийн сургалтын сайтад тавтай морилно уу.</p>
-    </div>
-  );
-}
-
-function Courses() {
-  return (
-    <div>
-      <h2>Сургалтууд</h2>
-      <p>Сургалтуудын жагсаалт энд байрлана.</p>
-    </div>
-  );
-}
-
 export default App;
-
-
-
-
-
-
-
-

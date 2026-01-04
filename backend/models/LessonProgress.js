@@ -33,3 +33,4 @@ lessonProgressSchema.index({ enrollmentId: 1, lessonId: 1 }, { unique: true });
 
 module.exports = mongoose.model('LessonProgress', lessonProgressSchema);
 
+

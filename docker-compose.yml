@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   mongodb:
     image: mongo:7
@@ -15,6 +13,7 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+    network_mode: bridge
 
   redis:
     image: redis:7-alpine
@@ -26,6 +25,7 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+    network_mode: bridge
 
 volumes:
   mongodb_data:

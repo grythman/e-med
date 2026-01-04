@@ -9,3 +9,4 @@ CREATE TABLE IF NOT EXISTS password_reset_tokens (
 CREATE INDEX idx_password_reset_tokens_token ON password_reset_tokens(token);
 CREATE INDEX idx_password_reset_tokens_expires ON password_reset_tokens(expires_at);
 
+

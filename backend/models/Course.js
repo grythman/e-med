@@ -51,3 +51,4 @@ courseSchema.index({ level: 1, language: 1 });
 
 module.exports = mongoose.model('Course', courseSchema);
 
+
