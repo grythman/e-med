@@ -290,6 +290,118 @@ class AdminService {
       throw new Error(`Failed to get payments: ${error.message}`);
     }
   }
+
+  /**
+   * Get revenue analytics (monthly for last 12 months)
+   */
+  async getRevenueAnalytics() {
+    try {
+      const months = [];
+      const revenue = [];
+      
+      for (let i = 11; i >= 0; i--) {
+        const date = new Date();
+        date.setMonth(date.getMonth() - i);
+        const startOfMonth = new Date(date.getFullYear(), date.getMonth(), 1);
+        const endOfMonth = new Date(date.getFullYear(), date.getMonth() + 1, 0);
+        
+        const monthRevenue = await Payment.aggregate([
+          {
+            $match: {
+              paymentStatus: 'completed',
+              createdAt: { $gte: startOfMonth, $lte: endOfMonth }
+            }
+          },
+          {
+            $group: {
+              _id: null,
+              total: { $sum: '$amount' }
+            }
+          }
+        ]);
+        
+        months.push(date.toLocaleDateString('mn-MN', { month: 'short', year: 'numeric' }));
+        revenue.push(monthRevenue[0]?.total || 0);
+      }
+      
+      return { months, revenue };
+    } catch (error) {
+      throw new Error(`Failed to get revenue analytics: ${error.message}`);
+    }
+  }
+
+  /**
+   * Get enrollment analytics (monthly for last 12 months)
+   */
+  async getEnrollmentAnalytics() {
+    try {
+      const months = [];
+      const enrollments = [];
+      
+      for (let i = 11; i >= 0; i--) {
+        const date = new Date();
+        date.setMonth(date.getMonth() - i);
+        const startOfMonth = new Date(date.getFullYear(), date.getMonth(), 1);
+        const endOfMonth = new Date(date.getFullYear(), date.getMonth() + 1, 0);
+        
+        const monthEnrollments = await Enrollment.countDocuments({
+          enrolledAt: { $gte: startOfMonth, $lte: endOfMonth }
+        });
+        
+        months.push(date.toLocaleDateString('mn-MN', { month: 'short', year: 'numeric' }));
+        enrollments.push(monthEnrollments);
+      }
+      
+      return { months, enrollments };
+    } catch (error) {
+      throw new Error(`Failed to get enrollment analytics: ${error.message}`);
+    }
+  }
+
+  /**
+   * Get popular courses (top 10 by enrollment count)
+   */
+  async getPopularCourses() {
+    try {
+      const popularCourses = await Enrollment.aggregate([
+        {
+          $group: {
+            _id: '$courseId',
+            enrollmentCount: { $sum: 1 }
+          }
+        },
+        {
+          $sort: { enrollmentCount: -1 }
+        },
+        {
+          $limit: 10
+        },
+        {
+          $lookup: {
+            from: 'courses',
+            localField: '_id',
+            foreignField: '_id',
+            as: 'course'
+          }
+        },
+        {
+          $unwind: '$course'
+        },
+        {
+          $project: {
+            courseId: '$_id',
+            title: '$course.title',
+            enrollmentCount: 1,
+            price: '$course.price'
+          }
+        }
+      ]);
+      
+      return popularCourses;
+    } catch (error) {
+      throw new Error(`Failed to get popular courses: ${error.message}`);
+    }
+  }
 }
 
 module.exports = new AdminService();

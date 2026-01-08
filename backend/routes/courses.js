@@ -56,6 +56,20 @@ router.get(
 );
 
 /**
+ * GET /api/courses/user/enrolled
+ * Get user's enrolled courses (must be before /:id route)
+ */
+router.get('/user/enrolled', authenticate, async (req, res) => {
+  try {
+    const enrollments = await courseService.getUserEnrollments(req.user.userId);
+    res.json({ enrollments });
+  } catch (error) {
+    console.error('Get user enrollments error:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+/**
  * GET /api/courses/:id
  * Get course details
  */

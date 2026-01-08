@@ -91,5 +91,29 @@ export const adminService = {
     const response = await api.get(`/admin/payments?${params.toString()}`);
     return response.data;
   },
+
+  /**
+   * Get revenue analytics
+   */
+  async getRevenueAnalytics() {
+    const response = await api.get('/admin/analytics/revenue');
+    return response.data.analytics;
+  },
+
+  /**
+   * Get enrollment analytics
+   */
+  async getEnrollmentAnalytics() {
+    const response = await api.get('/admin/analytics/enrollments');
+    return response.data.analytics;
+  },
+
+  /**
+   * Get popular courses
+   */
+  async getPopularCourses() {
+    const response = await api.get('/admin/analytics/popular-courses');
+    return response.data.courses;
+  },
 };
 

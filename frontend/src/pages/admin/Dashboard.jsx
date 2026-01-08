@@ -1,15 +1,42 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import useAdminStore from '../../store/adminStore';
+import { adminService } from '../../services/adminService';
 import Loading from '../../components/common/Loading';
+import RevenueChart from '../../components/admin/RevenueChart';
+import EnrollmentChart from '../../components/admin/EnrollmentChart';
+import PopularCoursesChart from '../../components/admin/PopularCoursesChart';
 
 const Dashboard = () => {
   const { t } = useTranslation();
   const { stats, isLoadingStats, fetchDashboardStats } = useAdminStore();
+  const [revenueData, setRevenueData] = useState(null);
+  const [enrollmentData, setEnrollmentData] = useState(null);
+  const [popularCourses, setPopularCourses] = useState([]);
+  const [isLoadingAnalytics, setIsLoadingAnalytics] = useState(true);
 
   useEffect(() => {
     fetchDashboardStats();
+    loadAnalytics();
   }, [fetchDashboardStats]);
+
+  const loadAnalytics = async () => {
+    setIsLoadingAnalytics(true);
+    try {
+      const [revenue, enrollments, courses] = await Promise.all([
+        adminService.getRevenueAnalytics(),
+        adminService.getEnrollmentAnalytics(),
+        adminService.getPopularCourses(),
+      ]);
+      setRevenueData(revenue);
+      setEnrollmentData(enrollments);
+      setPopularCourses(courses);
+    } catch (error) {
+      console.error('Error loading analytics:', error);
+    } finally {
+      setIsLoadingAnalytics(false);
+    }
+  };
 
   if (isLoadingStats) {
     return <Loading />;
@@ -98,6 +125,31 @@ const Dashboard = () => {
               </div>
             </div>
           </div>
+        </div>
+      )}
+
+      {/* Analytics Charts */}
+      {!isLoadingAnalytics && (
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+          {/* Revenue Chart */}
+          <div className="bg-white rounded-lg shadow-md p-6">
+            <h2 className="text-xl font-bold mb-4">Орлогын график (12 сар)</h2>
+            <RevenueChart data={revenueData} />
+          </div>
+
+          {/* Enrollment Chart */}
+          <div className="bg-white rounded-lg shadow-md p-6">
+            <h2 className="text-xl font-bold mb-4">Бүртгэлийн график (12 сар)</h2>
+            <EnrollmentChart data={enrollmentData} />
+          </div>
+        </div>
+      )}
+
+      {/* Popular Courses */}
+      {!isLoadingAnalytics && popularCourses.length > 0 && (
+        <div className="bg-white rounded-lg shadow-md p-6 mb-8">
+          <h2 className="text-xl font-bold mb-4">Эрэлттэй хичээлүүд (Top 10)</h2>
+          <PopularCoursesChart courses={popularCourses} />
         </div>
       )}
 

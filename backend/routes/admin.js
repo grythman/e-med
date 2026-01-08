@@ -177,5 +177,47 @@ router.get('/payments', async (req, res) => {
   }
 });
 
+/**
+ * GET /api/admin/analytics/revenue
+ * Get revenue analytics (monthly)
+ */
+router.get('/analytics/revenue', async (req, res) => {
+  try {
+    const analytics = await adminService.getRevenueAnalytics();
+    res.json({ analytics });
+  } catch (error) {
+    console.error('Revenue analytics error:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+/**
+ * GET /api/admin/analytics/enrollments
+ * Get enrollment analytics
+ */
+router.get('/analytics/enrollments', async (req, res) => {
+  try {
+    const analytics = await adminService.getEnrollmentAnalytics();
+    res.json({ analytics });
+  } catch (error) {
+    console.error('Enrollment analytics error:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+/**
+ * GET /api/admin/analytics/popular-courses
+ * Get popular courses
+ */
+router.get('/analytics/popular-courses', async (req, res) => {
+  try {
+    const courses = await adminService.getPopularCourses();
+    res.json({ courses });
+  } catch (error) {
+    console.error('Popular courses error:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
 module.exports = router;
 

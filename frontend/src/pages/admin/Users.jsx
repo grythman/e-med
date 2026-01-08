@@ -1,9 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import toast from 'react-hot-toast';
 import useAdminStore from '../../store/adminStore';
 import Loading from '../../components/common/Loading';
 import Button from '../../components/common/Button';
 import Input from '../../components/common/Input';
+import UserRoleModal from '../../components/admin/UserRoleModal';
+import UserDetailsModal from '../../components/admin/UserDetailsModal';
 
 const Users = () => {
   const { t } = useTranslation();
@@ -22,6 +25,9 @@ const Users = () => {
     role: '',
     isActive: '',
   });
+  const [selectedUser, setSelectedUser] = useState(null);
+  const [isRoleModalOpen, setIsRoleModalOpen] = useState(false);
+  const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
 
   useEffect(() => {
     fetchUsers({ page: 1, limit: 10 });
@@ -34,14 +40,26 @@ const Users = () => {
   const handleUpdateUser = async (userId, updates) => {
     const result = await updateUser(userId, updates);
     if (result.success) {
+      toast.success('Хэрэглэгч амжилттай шинэчлэгдлээ');
       fetchUsers({ ...filters, page: usersPagination?.page || 1, limit: 10 });
     }
+  };
+
+  const handleRoleChange = (user) => {
+    setSelectedUser(user);
+    setIsRoleModalOpen(true);
+  };
+
+  const handleViewDetails = (user) => {
+    setSelectedUser(user);
+    setIsDetailsModalOpen(true);
   };
 
   const handleDeleteUser = async (userId) => {
     if (window.confirm('Энэ хэрэглэгчийг устгахдаа итгэлтэй байна уу?')) {
       const result = await deleteUser(userId);
       if (result.success) {
+        toast.success('Хэрэглэгч амжилттай устгагдлаа');
         fetchUsers({ ...filters, page: usersPagination?.page || 1, limit: 10 });
       }
     }
@@ -116,9 +134,14 @@ const Users = () => {
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
             {users.map((user) => (
-              <tr key={user._id || user.id}>
+              <tr key={user._id || user.id} className="hover:bg-gray-50">
                 <td className="px-6 py-4 whitespace-nowrap">
-                  {user.firstName} {user.lastName}
+                  <button
+                    onClick={() => handleViewDetails(user)}
+                    className="text-blue-600 hover:text-blue-800 font-medium"
+                  >
+                    {user.firstName} {user.lastName}
+                  </button>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">{user.email}</td>
                 <td className="px-6 py-4 whitespace-nowrap">
@@ -139,6 +162,13 @@ const Users = () => {
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                   <div className="flex space-x-2">
+                    <Button
+                      size="small"
+                      variant="outline"
+                      onClick={() => handleRoleChange(user)}
+                    >
+                      Эрх өөрчлөх
+                    </Button>
                     <Button
                       size="small"
                       variant="outline"
@@ -203,6 +233,23 @@ const Users = () => {
           </div>
         )}
       </div>
+
+      {/* Modals */}
+      {selectedUser && (
+        <>
+          <UserRoleModal
+            user={selectedUser}
+            isOpen={isRoleModalOpen}
+            onClose={() => setIsRoleModalOpen(false)}
+            onSuccess={() => fetchUsers({ ...filters, page: usersPagination?.page || 1, limit: 10 })}
+          />
+          <UserDetailsModal
+            userId={selectedUser._id || selectedUser.id}
+            isOpen={isDetailsModalOpen}
+            onClose={() => setIsDetailsModalOpen(false)}
+          />
+        </>
+      )}
     </div>
   );
 };

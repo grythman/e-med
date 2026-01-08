@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { Toaster } from 'react-hot-toast';
 import './i18n/config';
 import useAuthStore from './store/authStore';
 
@@ -9,6 +10,7 @@ import Header from './components/layout/Header';
 import Footer from './components/layout/Footer';
 import ProtectedRoute from './components/common/ProtectedRoute';
 import AdminRoute from './components/common/AdminRoute';
+import ErrorBoundary from './components/common/ErrorBoundary';
 
 // Pages
 import Home from './pages/Home';
@@ -18,13 +20,19 @@ import LessonPlayer from './pages/LessonPlayer';
 import Quiz from './pages/Quiz';
 import Payment from './pages/Payment';
 import Profile from './pages/Profile';
+import MyCourses from './pages/MyCourses';
+import Certificates from './pages/Certificates';
+import CertificateDetail from './pages/CertificateDetail';
+import CertificateVerify from './pages/CertificateVerify';
 import Login from './pages/Login';
 import Register from './pages/Register';
+import NotFound from './pages/NotFound';
 
 // Admin Pages
 import AdminDashboard from './pages/admin/Dashboard';
 import AdminUsers from './pages/admin/Users';
 import AdminCourses from './pages/admin/Courses';
+import CourseForm from './pages/admin/CourseForm';
 import AdminPayments from './pages/admin/Payments';
 
 function App() {
@@ -40,7 +48,31 @@ function App() {
   }, [fetchCurrentUser]);
 
   return (
+    <ErrorBoundary>
     <Router>
+      <Toaster
+        position="top-right"
+        toastOptions={{
+          duration: 4000,
+          style: {
+            background: '#1f2937',
+            color: '#fff',
+            borderRadius: '10px',
+          },
+          success: {
+            iconTheme: {
+              primary: '#10b981',
+              secondary: '#fff',
+            },
+          },
+          error: {
+            iconTheme: {
+              primary: '#ef4444',
+              secondary: '#fff',
+            },
+          },
+        }}
+      />
       <div className="flex flex-col min-h-screen">
         <Header />
         <main className="flex-grow">
@@ -70,10 +102,7 @@ function App() {
               path="/my-courses"
               element={
                 <ProtectedRoute>
-                  <div className="container mx-auto px-4 py-8">
-                    <h1 className="text-3xl font-bold mb-8">Миний хичээлүүд</h1>
-                    <p className="text-gray-500">Удахгүй хэрэгжүүлнэ...</p>
-                  </div>
+                  <MyCourses />
                 </ProtectedRoute>
               }
             />
@@ -82,6 +111,24 @@ function App() {
               element={
                 <ProtectedRoute>
                   <Profile />
+                </ProtectedRoute>
+              }
+            />
+            {/* Certificate Routes */}
+            <Route path="/certificates/verify/:code" element={<CertificateVerify />} />
+            <Route
+              path="/certificates"
+              element={
+                <ProtectedRoute>
+                  <Certificates />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/certificates/:id"
+              element={
+                <ProtectedRoute>
+                  <CertificateDetail />
                 </ProtectedRoute>
               }
             />
@@ -111,6 +158,22 @@ function App() {
               }
             />
             <Route
+              path="/admin/courses/new"
+              element={
+                <AdminRoute>
+                  <CourseForm />
+                </AdminRoute>
+              }
+            />
+            <Route
+              path="/admin/courses/:id/edit"
+              element={
+                <AdminRoute>
+                  <CourseForm />
+                </AdminRoute>
+              }
+            />
+            <Route
               path="/admin/payments"
               element={
                 <AdminRoute>
@@ -118,12 +181,13 @@ function App() {
                 </AdminRoute>
               }
             />
-            <Route path="*" element={<Navigate to="/" replace />} />
+            <Route path="*" element={<NotFound />} />
           </Routes>
         </main>
         <Footer />
       </div>
     </Router>
+    </ErrorBoundary>
   );
 }
 

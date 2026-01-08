@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
+import toast from 'react-hot-toast';
 import useAdminStore from '../../store/adminStore';
 import Loading from '../../components/common/Loading';
 import Button from '../../components/common/Button';
@@ -7,6 +9,7 @@ import Input from '../../components/common/Input';
 
 const Courses = () => {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const {
     courses,
     coursesPagination,
@@ -41,6 +44,7 @@ const Courses = () => {
     if (window.confirm('Энэ хичээлийг устгахдаа итгэлтэй байна уу?')) {
       const result = await deleteCourse(courseId);
       if (result.success) {
+        toast.success('Хичээл амжилттай устгагдлаа');
         fetchCourses({ ...filters, page: coursesPagination?.page || 1, limit: 10 });
       }
     }
@@ -52,7 +56,12 @@ const Courses = () => {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold mb-8">Хичээлүүд</h1>
+      <div className="flex justify-between items-center mb-8">
+        <h1 className="text-3xl font-bold">Хичээлүүд</h1>
+        <Button onClick={() => navigate('/admin/courses/new')}>
+          + Шинэ хичээл үүсгэх
+        </Button>
+      </div>
 
       {error && (
         <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded mb-4">
@@ -135,6 +144,13 @@ const Courses = () => {
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                   <div className="flex space-x-2">
+                    <Button
+                      size="small"
+                      variant="outline"
+                      onClick={() => navigate(`/admin/courses/${course._id || course.id}/edit`)}
+                    >
+                      Засах
+                    </Button>
                     <Button
                       size="small"
                       variant={course.isPublished ? 'outline' : 'primary'}

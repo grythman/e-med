@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { param, validationResult } = require('express-validator');
+const mongoose = require('mongoose');
 const certificateService = require('../services/certificateService');
 const { authenticate } = require('../middleware/auth');
 
@@ -14,6 +15,11 @@ const handleValidationErrors = (req, res, next) => {
   }
   next();
 };
+
+/**
+ * Validate MongoDB ObjectId
+ */
+const isValidObjectId = (value) => mongoose.Types.ObjectId.isValid(value);
 
 /**
  * GET /api/certificates
@@ -32,36 +38,8 @@ router.get('/', authenticate, async (req, res) => {
 });
 
 /**
- * GET /api/certificates/:id
- * Get certificate
- */
-router.get(
-  '/:id',
-  authenticate,
-  [param('id').isUUID(), handleValidationErrors],
-  async (req, res) => {
-    try {
-      const certificate = await certificateService.getCertificateById(
-        req.params.id,
-        req.user.userId
-      );
-      res.json({ certificate });
-    } catch (error) {
-      if (error.message === 'Certificate not found') {
-        return res.status(404).json({ error: error.message });
-      }
-      if (error.message === 'Access denied') {
-        return res.status(403).json({ error: error.message });
-      }
-      console.error('Get certificate error:', error);
-      res.status(500).json({ error: 'Internal server error' });
-    }
-  }
-);
-
-/**
  * GET /api/certificates/verify/:code
- * Verify certificate (public endpoint)
+ * Verify certificate (public endpoint) - Must be before /:id
  */
 router.get(
   '/verify/:code',
@@ -83,13 +61,41 @@ router.get(
 );
 
 /**
+ * GET /api/certificates/:id
+ * Get certificate
+ */
+router.get(
+  '/:id',
+  authenticate,
+  [param('id').custom(isValidObjectId).withMessage('Invalid certificate ID'), handleValidationErrors],
+  async (req, res) => {
+    try {
+      const certificate = await certificateService.getCertificateById(
+        req.params.id,
+        req.user.userId
+      );
+      res.json({ certificate });
+    } catch (error) {
+      if (error.message === 'Certificate not found') {
+        return res.status(404).json({ error: error.message });
+      }
+      if (error.message === 'Access denied') {
+        return res.status(403).json({ error: error.message });
+      }
+      console.error('Get certificate error:', error);
+      res.status(500).json({ error: 'Internal server error' });
+    }
+  }
+);
+
+/**
  * POST /api/certificates/:id/download
  * Download certificate PDF
  */
 router.post(
   '/:id/download',
   authenticate,
-  [param('id').isUUID(), handleValidationErrors],
+  [param('id').custom(isValidObjectId).withMessage('Invalid certificate ID'), handleValidationErrors],
   async (req, res) => {
     try {
       const result = await certificateService.downloadCertificate(
@@ -117,7 +123,7 @@ router.post(
 router.post(
   '/generate/:enrollmentId',
   authenticate,
-  [param('enrollmentId').isUUID(), handleValidationErrors],
+  [param('enrollmentId').custom(isValidObjectId).withMessage('Invalid enrollment ID'), handleValidationErrors],
   async (req, res) => {
     try {
       const certificate = await certificateService.generateCertificate(

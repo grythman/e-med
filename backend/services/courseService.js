@@ -151,6 +151,30 @@ class CourseService {
 
     return lessons;
   }
+
+  /**
+   * Get user's enrolled courses with progress
+   */
+  async getUserEnrollments(userId) {
+    const enrollments = await enrollmentRepository.findByUser(userId);
+    
+    // Get progress for each enrollment
+    const enrollmentsWithProgress = await Promise.all(
+      enrollments.map(async (enrollment) => {
+        const progress = await enrollmentRepository.getProgress(enrollment._id.toString());
+        return {
+          ...enrollment,
+          totalLessons: progress?.totalLessons || 0,
+          completedLessons: progress?.completedLessons || 0,
+          progressPercentage: progress?.totalLessons > 0 
+            ? Math.round((progress.completedLessons / progress.totalLessons) * 100) 
+            : 0
+        };
+      })
+    );
+
+    return enrollmentsWithProgress;
+  }
 }
 
 module.exports = new CourseService();

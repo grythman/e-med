@@ -4,7 +4,9 @@ import { courseService } from '../services/courseService';
 const useCourseStore = create((set, get) => ({
   courses: [],
   currentCourse: null,
+  myEnrollments: [],
   isLoading: false,
+  isLoadingEnrollments: false,
   error: null,
   pagination: null,
   filters: {
@@ -63,6 +65,20 @@ const useCourseStore = create((set, get) => ({
     }
   },
 
+  // Get user's enrolled courses
+  fetchMyEnrollments: async () => {
+    set({ isLoadingEnrollments: true, error: null });
+    try {
+      const enrollments = await courseService.getMyEnrollments();
+      set({ myEnrollments: enrollments, isLoadingEnrollments: false });
+      return enrollments;
+    } catch (error) {
+      const errorMessage = error.response?.data?.error || 'Failed to fetch enrollments';
+      set({ error: errorMessage, isLoadingEnrollments: false });
+      throw error;
+    }
+  },
+
   // Clear error
   clearError: () => set({ error: null }),
 
@@ -70,6 +86,7 @@ const useCourseStore = create((set, get) => ({
   reset: () => set({
     courses: [],
     currentCourse: null,
+    myEnrollments: [],
     error: null,
     pagination: null,
   }),
