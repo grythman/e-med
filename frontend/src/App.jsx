@@ -1,5 +1,6 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, Suspense, lazy } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { HelmetProvider } from 'react-helmet-async';
 import { useTranslation } from 'react-i18next';
 import { Toaster } from 'react-hot-toast';
 import './i18n/config';
@@ -11,29 +12,32 @@ import Footer from './components/layout/Footer';
 import ProtectedRoute from './components/common/ProtectedRoute';
 import AdminRoute from './components/common/AdminRoute';
 import ErrorBoundary from './components/common/ErrorBoundary';
+import { PageLoading } from './components/common/Loading';
 
-// Pages
+// Home page - load immediately
 import Home from './pages/Home';
-import Courses from './pages/Courses';
-import CourseDetail from './pages/CourseDetail';
-import LessonPlayer from './pages/LessonPlayer';
-import Quiz from './pages/Quiz';
-import Payment from './pages/Payment';
-import Profile from './pages/Profile';
-import MyCourses from './pages/MyCourses';
-import Certificates from './pages/Certificates';
-import CertificateDetail from './pages/CertificateDetail';
-import CertificateVerify from './pages/CertificateVerify';
-import Login from './pages/Login';
-import Register from './pages/Register';
-import NotFound from './pages/NotFound';
 
-// Admin Pages
-import AdminDashboard from './pages/admin/Dashboard';
-import AdminUsers from './pages/admin/Users';
-import AdminCourses from './pages/admin/Courses';
-import CourseForm from './pages/admin/CourseForm';
-import AdminPayments from './pages/admin/Payments';
+// Lazy load other pages for better performance
+const Courses = lazy(() => import('./pages/Courses'));
+const CourseDetail = lazy(() => import('./pages/CourseDetail'));
+const LessonPlayer = lazy(() => import('./pages/LessonPlayer'));
+const Quiz = lazy(() => import('./pages/Quiz'));
+const Payment = lazy(() => import('./pages/Payment'));
+const Profile = lazy(() => import('./pages/Profile'));
+const MyCourses = lazy(() => import('./pages/MyCourses'));
+const Certificates = lazy(() => import('./pages/Certificates'));
+const CertificateDetail = lazy(() => import('./pages/CertificateDetail'));
+const CertificateVerify = lazy(() => import('./pages/CertificateVerify'));
+const Login = lazy(() => import('./pages/Login'));
+const Register = lazy(() => import('./pages/Register'));
+const NotFound = lazy(() => import('./pages/NotFound'));
+
+// Admin Pages - lazy loaded
+const AdminDashboard = lazy(() => import('./pages/admin/Dashboard'));
+const AdminUsers = lazy(() => import('./pages/admin/Users'));
+const AdminCourses = lazy(() => import('./pages/admin/Courses'));
+const CourseForm = lazy(() => import('./pages/admin/CourseForm'));
+const AdminPayments = lazy(() => import('./pages/admin/Payments'));
 
 function App() {
   const { i18n } = useTranslation();
@@ -49,6 +53,7 @@ function App() {
 
   return (
     <ErrorBoundary>
+    <HelmetProvider>
     <Router>
       <Toaster
         position="top-right"
@@ -76,12 +81,13 @@ function App() {
       <div className="flex flex-col min-h-screen">
         <Header />
         <main className="flex-grow">
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/courses" element={<Courses />} />
-            <Route path="/courses/:id" element={<CourseDetail />} />
-            <Route path="/lessons/:id" element={<LessonPlayer />} />
-            <Route path="/lessons/:id/quiz" element={<Quiz />} />
+          <Suspense fallback={<PageLoading />}>
+            <Routes>
+              <Route path="/" element={<Home />} />
+              <Route path="/courses" element={<Courses />} />
+              <Route path="/courses/:id" element={<CourseDetail />} />
+              <Route path="/lessons/:id" element={<LessonPlayer />} />
+              <Route path="/lessons/:id/quiz" element={<Quiz />} />
             <Route
               path="/courses/:courseId/payment"
               element={
@@ -182,11 +188,13 @@ function App() {
               }
             />
             <Route path="*" element={<NotFound />} />
-          </Routes>
+            </Routes>
+          </Suspense>
         </main>
         <Footer />
       </div>
     </Router>
+    </HelmetProvider>
     </ErrorBoundary>
   );
 }

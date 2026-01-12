@@ -5,6 +5,7 @@ import useCourseStore from '../store/courseStore';
 import CourseCard from '../components/course/CourseCard';
 import { CourseCardSkeleton } from '../components/common/Skeleton';
 import Button from '../components/common/Button';
+import SEO from '../components/common/SEO';
 
 const Home = () => {
   const { t } = useTranslation();
@@ -61,7 +62,13 @@ const Home = () => {
   ];
 
   return (
-    <div className="min-h-screen">
+    <>
+      <SEO
+        title="Нүүр хуудас"
+        description="Монголын эмч, эрүүл мэндийн мэргэжилтнүүдэд зориулсан онлайн сургалтын платформ. 500+ хичээл, мэргэжлийн багш нар, баталгаажсан гэрчилгээ."
+        keywords="эмчийн сургалт, онлайн сургалт, эрүүл мэндийн боловсрол, Монгол эмч, medical education, online courses"
+      />
+      <div className="min-h-screen">
       {/* Hero Section */}
       <section className="relative overflow-hidden bg-gradient-medical text-white">
         {/* Background Pattern */}
@@ -246,6 +253,7 @@ const Home = () => {
         </div>
       </section>
     </div>
+    </>
   );
 };
 

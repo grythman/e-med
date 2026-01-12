@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { memo } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { LevelBadge } from '../common/Badge';
@@ -126,4 +126,5 @@ const CourseCard = ({ course }) => {
   );
 };
 
-export default CourseCard;
+// Memoize to prevent unnecessary re-renders
+export default memo(CourseCard);
