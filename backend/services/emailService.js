@@ -1,4 +1,5 @@
 const nodemailer = require('nodemailer');
+const emailTemplates = require('../utils/emailTemplates');
 require('dotenv').config();
 
 /**
@@ -69,17 +70,14 @@ class EmailService {
    */
   async sendWelcomeEmail(user) {
     const subject = 'e-med - Тавтай морилно уу!';
-    const html = `
-      <h1>Тавтай морилно уу, ${user.firstName}!</h1>
-      <p>Та e-med платформд амжилттай бүртгүүллээ.</p>
-      <p>Одоо та бүх хичээлүүдэд хандах боломжтой.</p>
-      <p><a href="${process.env.FRONTEND_URL || 'http://localhost:3000'}/courses">Хичээлүүд үзэх</a></p>
-    `;
+    const html = emailTemplates.welcome(user);
+    const text = `Тавтай морилно уу, ${user.firstName}!\n\nТа e-med платформд амжилттай бүртгүүллээ.\n\nХичээлүүд үзэх: ${process.env.FRONTEND_URL || 'http://localhost:3000'}/courses`;
 
     return await this.sendEmail({
       to: user.email,
       subject,
       html,
+      text,
     });
   }
 
@@ -87,21 +85,16 @@ class EmailService {
    * Send password reset email
    */
   async sendPasswordResetEmail(email, resetToken) {
-    const resetUrl = `${process.env.FRONTEND_URL || 'http://localhost:3000'}/reset-password?token=${resetToken}`;
     const subject = 'e-med - Нууц үг сэргээх';
-    const html = `
-      <h1>Нууц үг сэргээх</h1>
-      <p>Та нууц үгээ сэргээх хүсэлт илгээсэн байна.</p>
-      <p>Дараах холбоос дээр дарж нууц үгээ сэргээнэ үү:</p>
-      <p><a href="${resetUrl}">${resetUrl}</a></p>
-      <p>Энэ холбоос 1 цагийн дараа хүчингүй болно.</p>
-      <p>Хэрэв та энэ хүсэлтийг илгээгээгүй бол энэ имэйлийг үл тоомсорлож болно.</p>
-    `;
+    const html = emailTemplates.passwordReset(resetToken);
+    const resetUrl = `${process.env.FRONTEND_URL || 'http://localhost:3000'}/reset-password?token=${resetToken}`;
+    const text = `Нууц үг сэргээх\n\nТа нууц үгээ сэргээх хүсэлт илгээсэн байна.\n\nХолбоос: ${resetUrl}\n\nЭнэ холбоос 1 цагийн дараа хүчингүй болно.`;
 
     return await this.sendEmail({
       to: email,
       subject,
       html,
+      text,
     });
   }
 
@@ -110,16 +103,14 @@ class EmailService {
    */
   async sendEnrollmentEmail(user, course) {
     const subject = `e-med - "${course.title}" хичээлд бүртгүүллээ`;
-    const html = `
-      <h1>Баяр хүргэе!</h1>
-      <p>Та "${course.title}" хичээлд амжилттай бүртгүүллээ.</p>
-      <p><a href="${process.env.FRONTEND_URL || 'http://localhost:3000'}/courses/${course._id || course.id}">Хичээл үзэх</a></p>
-    `;
+    const html = emailTemplates.enrollment(user, course);
+    const text = `Баяр хүргэе!\n\nТа "${course.title}" хичээлд амжилттай бүртгүүллээ.\n\nХичээл үзэх: ${process.env.FRONTEND_URL || 'http://localhost:3000'}/courses/${course._id || course.id}`;
 
     return await this.sendEmail({
       to: user.email,
       subject,
       html,
+      text,
     });
   }
 
@@ -128,17 +119,62 @@ class EmailService {
    */
   async sendCertificateEmail(user, certificate, course) {
     const subject = `e-med - "${course.title}" хичээлийн гэрчилгээ`;
-    const html = `
-      <h1>Баяр хүргэе!</h1>
-      <p>Та "${course.title}" хичээлийг амжилттай дуусгаж, гэрчилгээ авлаа.</p>
-      <p>Гэрчилгээний дугаар: ${certificate.certificateNumber}</p>
-      <p><a href="${process.env.FRONTEND_URL || 'http://localhost:3000'}/certificates/${certificate._id || certificate.id}">Гэрчилгээ үзэх</a></p>
-    `;
+    const html = emailTemplates.certificate(user, certificate, course);
+    const text = `Баяр хүргэе!\n\nТа "${course.title}" хичээлийг амжилттай дуусгаж, гэрчилгээ авлаа.\n\nГэрчилгээний дугаар: ${certificate.certificateNumber}\n\nГэрчилгээ үзэх: ${process.env.FRONTEND_URL || 'http://localhost:3000'}/certificates/${certificate._id || certificate.id}`;
 
     return await this.sendEmail({
       to: user.email,
       subject,
       html,
+      text,
+    });
+  }
+
+  /**
+   * Send course completion email
+   */
+  async sendCourseCompletionEmail(user, course, progress) {
+    const subject = `e-med - "${course.title}" хичээл дууслаа`;
+    const html = emailTemplates.courseCompletion(user, course, progress);
+    const text = `Хичээл дууслаа!\n\nТа "${course.title}" хичээлийг амжилттай дуусгалаа.\n\nЯвц: ${progress.progressPercentage}%\n\nГэрчилгээ үүсгэх: ${process.env.FRONTEND_URL || 'http://localhost:3000'}/courses/${course._id || course.id}`;
+
+    return await this.sendEmail({
+      to: user.email,
+      subject,
+      html,
+      text,
+    });
+  }
+
+  /**
+   * Send payment confirmation email
+   */
+  async sendPaymentConfirmationEmail(user, payment, course) {
+    const subject = 'e-med - Төлбөр амжилттай';
+    const html = emailTemplates.paymentConfirmation(user, payment, course);
+    const text = `Төлбөр амжилттай!\n\nТа "${course.title}" хичээлийн төлбөрийг амжилттай төлсөн байна.\n\nДүн: ${payment.amount?.toLocaleString()} ₮\nТөлбөрийн дугаар: ${payment._id || payment.id}`;
+
+    return await this.sendEmail({
+      to: user.email,
+      subject,
+      html,
+      text,
+    });
+  }
+
+  /**
+   * Send lesson reminder email
+   */
+  async sendLessonReminderEmail(user, course, nextLesson) {
+    const subject = `e-med - "${course.title}" хичээл үргэлжлүүлэх`;
+    const html = emailTemplates.lessonReminder(user, course, nextLesson);
+    const text = `Хичээл үргэлжлүүлэх цаг боллоо\n\nТа "${course.title}" хичээлийг үргэлжлүүлэх цаг боллоо.\n\nХичээл үзэх: ${process.env.FRONTEND_URL || 'http://localhost:3000'}/courses/${course._id || course.id}`;
+
+    return await this.sendEmail({
+      to: user.email,
+      subject,
+      html,
+      text,
     });
   }
 }
