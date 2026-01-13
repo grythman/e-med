@@ -35,7 +35,8 @@
     "multer": "^1.4.5-lts.1",
     "nodemailer": "^6.9.7",
     "redis": "^4.6.10",
-    "stripe": "^20.1.0"
+    "stripe": "^20.1.0",
+    "winston": "^3.19.0"
   },
   "devDependencies": {
     "eslint": "^8.55.0",
